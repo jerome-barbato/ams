@@ -22,21 +22,12 @@ class GroupRepository extends ServiceEntityRepository
 	public function transform(Group $group)
 	{
 		return [
-			'id'    => (int) $group->getId(),
-			'title' => $group->getTitle(),
-			'description' => $group->getDescription()
+			'id'           => (string) $group->getUuid(),
+			'title'        => (string) $group->getTitle(),
+			'description'  => (string) $group->getDescription(),
+			'creation'     => (string) $group->getCreation()->format(getenv('DATE_FORMAT')),
+			'participants' => (int) $group->getMilitants()->count(),
+			'news'         => (int) $group->getNews()->count()
 		];
-	}
-
-	public function transformAll()
-	{
-		$groups = $this->findAll();
-		$groupsArray = [];
-
-		foreach ($groups as $group) {
-			$groupsArray[] = $this->transform($group);
-		}
-
-		return $groupsArray;
 	}
 }

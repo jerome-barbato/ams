@@ -15,200 +15,241 @@ use Doctrine\Common\Collections\Collection;
  */
 class Militant
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+	/**
+	 * @ORM\Id()
+	 * @ORM\GeneratedValue()
+	 * @ORM\Column(type="integer")
+	 */
 	protected $id;
 
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $firstName;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $lastName;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $email;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $image;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $lat;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $lng;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $address;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $postalCode;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $city;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
-    private $country;
+	/**
+	 * @ORM\Column(type="string", length=13)
+	 */
+	private $uuid;
 
 	/**
-	 * Many Militants have Many Groups.
-	 * @OneToMany(targetEntity="Role", mappedBy="militant")
+	 * @ORM\Column(type="string", length=200)
+	 */
+	private $firstName;
+
+	/**
+	 * @ORM\Column(type="string", length=200)
+	 */
+	private $lastName;
+
+	/**
+	 * @ORM\Column(type="string", length=200)
+	 */
+	private $email;
+
+	/**
+	 * @ORM\Column(type="string", length=255, nullable=true)
+	 */
+	private $image;
+
+	/**
+	 * Many Militants can be in Many Groups.
+	 * @OneToMany(targetEntity="Member", mappedBy="militant")
 	 */
 	private $groups;
 
+	/**
+	 * Many Militants can be in Many event.
+	 * @OneToMany(targetEntity="Participant", mappedBy="militant")
+	 */
+	private $events;
+
+	/**
+	 * @ORM\Column(type="date")
+	 */
+	private $inscription;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="Place")
+	 */
+	private $place;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\News", mappedBy="author")
+     */
+    private $news;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Material", mappedBy="owners")
+     */
+    private $materials;
+
+	/**
+	 * Triggered on insert
+	 * @ORM\PrePersist
+	 */
+	public function onPrePersist()
+                              	{
+                              		$this->inscription = new \DateTime("now");
+                              	}
+
 	public function __construct()
-	{
-		$this->groups = new ArrayCollection();
-	}
+                              	{
+                              		$this->groups = new ArrayCollection();
+                              		$this->events = new ArrayCollection();
+                                $this->news = new ArrayCollection();
+                                $this->materials = new ArrayCollection();
+                              	}
 
 	public function getGroups(): Collection
-	{
-		return $this->groups;
-	}
+                              	{
+                              		return $this->groups;
+                              	}
+
+	public function getEvents(): Collection
+                              	{
+                              		return $this->events;
+                              	}
 
 	public function getId(): ?int
+                              	{
+                              		return $this->id;
+                              	}
+
+	public function getFirstName(): ?string
+                              	{
+                              		return $this->firstName;
+                              	}
+
+	public function setFirstName(string $firstName): self
+                              	{
+                              		$this->firstName = $firstName;
+                              
+                              		return $this;
+                              	}
+
+	public function getLastName(): ?string
+                              	{
+                              		return $this->lastName;
+                              	}
+
+	public function setLastName(string $lastName): self
+                              	{
+                              		$this->lastName = $lastName;
+                              
+                              		return $this;
+                              	}
+
+	public function getEmail(): ?string
+                              	{
+                              		return $this->email;
+                              	}
+
+	public function setEmail(string $email): self
+                              	{
+                              		$this->email = $email;
+                              
+                              		return $this;
+                              	}
+
+	public function getImage(): ?string
+                              	{
+                              		return $this->image;
+                              	}
+
+	public function setImage(?string $image): self
+                              	{
+                              		$this->image = $image;
+                              
+                              		return $this;
+                              	}
+
+	public function getUuid(): ?string
+                              	{
+                              		return $this->uuid;
+                              	}
+
+	public function setUuid(string $uuid): self
+                              	{
+                              		$this->uuid = $uuid;
+                              
+                              		return $this;
+                              	}
+
+	public function getInscription(): ?\DateTimeInterface
+                              	{
+                              		return $this->inscription;
+                              	}
+
+	public function setInscription(\DateTimeInterface $inscription): self
+                              	{
+                              		$this->inscription = $inscription;
+                              
+                              		return $this;
+                              	}
+
+	public function getPlace(): ?Place
+                              	{
+                              		return $this->place;
+                              	}
+
+	public function setPlace(?Place $place): self
+                              	{
+                              		$this->place = $place;
+                              
+                              		return $this;
+                              	}
+
+    /**
+     * @return Collection|News[]
+     */
+    public function getNews(): Collection
     {
-        return $this->id;
+        return $this->news;
     }
 
-    public function getFirstName(): ?string
+    public function addNews(News $news): self
     {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
+        if (!$this->news->contains($news)) {
+            $this->news[] = $news;
+            $news->setAuthor($this);
+        }
 
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function removeNews(News $news): self
     {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
+        if ($this->news->contains($news)) {
+            $this->news->removeElement($news);
+            // set the owning side to null (unless already changed)
+            if ($news->getAuthor() === $this) {
+                $news->setAuthor(null);
+            }
+        }
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    /**
+     * @return Collection|Material[]
+     */
+    public function getMaterials(): Collection
     {
-        return $this->email;
+        return $this->materials;
     }
 
-    public function setEmail(string $email): self
+    public function addMaterial(Material $material): self
     {
-        $this->email = $email;
+        if (!$this->materials->contains($material)) {
+            $this->materials[] = $material;
+            $material->addOwner($this);
+        }
 
         return $this;
     }
 
-    public function getImage(): ?string
+    public function removeMaterial(Material $material): self
     {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
-    public function getLat(): ?float
-    {
-        return $this->lat;
-    }
-
-    public function setLat(?float $lat): self
-    {
-        $this->lat = $lat;
-
-        return $this;
-    }
-
-    public function getLng(): ?float
-    {
-        return $this->lng;
-    }
-
-    public function setLng(?float $lng): self
-    {
-        $this->lng = $lng;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getPostalCode(): ?int
-    {
-        return $this->postalCode;
-    }
-
-    public function setPostalCode(int $postalCode): self
-    {
-        $this->postalCode = $postalCode;
-
-        return $this;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    public function setCity(string $city): self
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): self
-    {
-        $this->country = $country;
+        if ($this->materials->contains($material)) {
+            $this->materials->removeElement($material);
+            $material->removeOwner($this);
+        }
 
         return $this;
     }

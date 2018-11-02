@@ -10,13 +10,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class MilitantController extends ApiController
 {
 	/**
-	 * @Route("/militants", methods={"GET"})
+	 * @Route("/militants/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function index(MilitantRepository $militantRepository)
+	public function list($page=0, MilitantRepository $militantRepository)
 	{
-		$militants = $militantRepository->transformAll();
+		$militants      = $militantRepository->findBy([], ['inscription'=>'ASC'], getenv('LIMIT'), $page);
+		$militantsArray = [];
 
-		return $this->respond($militants);
+		foreach ($militants as $militant) {
+			$militantsArray[] = $militantRepository->transform($militant);
+		}
+
+		return $this->respond($militantsArray);
 	}
 
 
@@ -25,13 +30,12 @@ class MilitantController extends ApiController
 	 */
 	public function show($id, MilitantRepository $militantRepository)
 	{
-		$militant = $militantRepository->find($id);
+		$militant = $militantRepository->findOneBy(['uuid'=>$id]);
 
-		if (! $militant) {
+		if (!$militant)
 			return $this->respondNotFound();
-		}
 
-		$militant = $militantRepository->transform($militant);
+		$militant = $militantRepository->transform($militant, true);
 
 		return $this->respond($militant);
 	}
@@ -58,6 +62,7 @@ class MilitantController extends ApiController
 		// persist the new militant
 		try{
 			$militant = new Militant();
+			$militant->setUuid(uniqid());
 			$militant->setFirstName($request->get('first_name'));
 			$militant->setLastName($request->get('last_name'));
 			$militant->setEmail($request->get('email'));

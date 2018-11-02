@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Role;
+use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * @method Role|null find($id, $lockMode = null, $lockVersion = null)
- * @method Role|null findOneBy(array $criteria, array $orderBy = null)
- * @method Role[]    findAll()
- * @method Role[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Participant|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Participant|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Participant[]    findAll()
+ * @method Participant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RoleRepository extends ServiceEntityRepository
+class ParticipantRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, Role::class);
+        parent::__construct($registry, Participant::class);
     }
 
 //    /**
-//     * @return Role[] Returns an array of Role objects
+//     * @return Participant[] Returns an array of Participant objects
 //     */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class RoleRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Role
+    public function findOneBySomeField($value): ?Participant
     {
         return $this->createQueryBuilder('g')
             ->andWhere('g.exampleField = :val')

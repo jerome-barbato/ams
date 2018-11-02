@@ -10,13 +10,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class GroupController extends ApiController
 {
 	/**
-	 * @Route("/groups", methods={"GET"})
+	 * @Route("/groups/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function index(GroupRepository $groupRepository)
+	public function list($page=0, GroupRepository $groupRepository)
 	{
-		$groups = $groupRepository->transformAll();
+		$groups = $groupRepository->findBy([], ['creation'=>'ASC'], getenv('LIMIT'), $page);
+		$groupsArray = [];
 
-		return $this->respond($groups);
+		foreach ($groups as $group) {
+			$groupsArray[] = $groupRepository->transform($group);
+		}
+
+		return $this->respond($groupsArray);
 	}
 
 
@@ -25,11 +30,10 @@ class GroupController extends ApiController
 	 */
 	public function show($id, GroupRepository $groupRepository)
 	{
-		$group = $groupRepository->find($id);
+		$group = $groupRepository->findOneBy(['uuid'=>$id]);
 
-		if (! $group) {
+		if (! $group)
 			return $this->respondNotFound();
-		}
 
 		$group = $groupRepository->transform($group);
 
@@ -58,6 +62,7 @@ class GroupController extends ApiController
 		// persist the new group
 		try{
 			$group = new Group();
+			$group->setUuid(uniqid());
 			$group->setFirstName($request->get('first_name'));
 			$group->setLastName($request->get('last_name'));
 			$group->setEmail($request->get('email'));

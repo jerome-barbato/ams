@@ -22,6 +22,11 @@ class Group
      */
 	protected $id;
 
+	/**
+	 * @ORM\Column(type="string", length=13)
+	 */
+	private $uuid;
+
     /**
      * @ORM\Column(type="string", length=255)
      */
@@ -39,25 +44,45 @@ class Group
 
 	/**
 	 * Many Groups have Many Users.
-	 * @OneToMany(targetEntity="Role", mappedBy="group")
+	 * @OneToMany(targetEntity="Member", mappedBy="group")
 	 */
 	private $militants;
 
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $creation;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\News", mappedBy="groups")
+     */
+    private $news;
+
 
 	public function __construct()
-	{
-		$this->militants = new ArrayCollection();
-	}
+               	{
+               		$this->militants = new ArrayCollection();
+                 $this->news = new ArrayCollection();
+               	}
 
-	public function getGroups(): Collection
-	{
-		return $this->militants;
-	}
+	/**
+	 * Triggered on insert
+	 * @ORM\PrePersist
+	 */
+	public function onPrePersist()
+               	{
+               		$this->creation = new \DateTime("now");
+               	}
+
+	public function getMilitants(): Collection
+               	{
+               		return $this->militants;
+               	}
 
 	public function getId(): ?int
-    {
-        return $this->id;
-    }
+               	{
+               		return $this->id;
+               	}
 
     public function getTitle(): ?string
     {
@@ -91,6 +116,58 @@ class Group
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCreation(): ?\DateTimeInterface
+    {
+        return $this->creation;
+    }
+
+    public function setCreation(\DateTimeInterface $creation): self
+    {
+        $this->creation = $creation;
+
+        return $this;
+    }
+
+	public function getUuid(): ?string
+               	{
+               		return $this->uuid;
+               	}
+
+	public function setUuid(string $uuid): self
+               	{
+               		$this->uuid = $uuid;
+               
+               		return $this;
+               	}
+
+    /**
+     * @return Collection|News[]
+     */
+    public function getNews(): Collection
+    {
+        return $this->news;
+    }
+
+    public function addNews(News $news): self
+    {
+        if (!$this->news->contains($news)) {
+            $this->news[] = $news;
+            $news->addGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNews(News $news): self
+    {
+        if ($this->news->contains($news)) {
+            $this->news->removeElement($news);
+            $news->removeGroup($this);
+        }
 
         return $this;
     }
