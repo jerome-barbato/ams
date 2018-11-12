@@ -1,9 +1,10 @@
 <?php
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ApiController
+class ApiController extends Controller
 {
 
 	/**
@@ -111,6 +112,18 @@ class ApiController
 	public function respondCreated($data = [])
 	{
 		return $this->setStatusCode(201)->respond($data);
+	}
+
+	/**
+	 * Returns a 410 Gone
+	 *
+	 * @param array $data
+	 *
+	 * @return JsonResponse
+	 */
+	public function respondGone($data = [])
+	{
+		return $this->setStatusCode(410)->respond($data);
 	}
 
 

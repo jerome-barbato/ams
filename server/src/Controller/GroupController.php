@@ -26,7 +26,7 @@ class GroupController extends ApiController
 
 
 	/**
-	 * @Route("/groups/{id}", methods={"GET"})
+	 * @Route("/group/{id}", methods={"GET"})
 	 */
 	public function show($id, GroupRepository $groupRepository)
 	{
@@ -42,17 +42,12 @@ class GroupController extends ApiController
 
 
 	/**
-	 * @Route("/groups", methods={"POST"})
+	 * @Route("/group", methods={"POST"})
 	 */
 	public function create(Request $request, GroupRepository $groupRepository, EntityManagerInterface $em)
 	{
-		$request = $this->transformJsonBody($request);
-
-		if (!$request)
-			return $this->respondValidationError('Please provide a valid request!');
-
 		// validate the fields
-		$fields = ['first_name','last_name','email','address','postal_code','city','country'];
+		$fields = ['title'];
 		foreach ($fields as $field){
 			if (!$request->get($field)) {
 				return $this->respondValidationError('Please provide a '.str_replace('_', ' ', $field).'!');
@@ -63,15 +58,8 @@ class GroupController extends ApiController
 		try{
 			$group = new Group();
 			$group->setUuid(uniqid());
-			$group->setFirstName($request->get('first_name'));
-			$group->setLastName($request->get('last_name'));
-			$group->setEmail($request->get('email'));
-			$group->setAddress($request->get('address'));
-			$group->setPostalCode($request->get('postal_code'));
-			$group->setCity($request->get('city'));
-			$group->setCountry($request->get('country'));
-			$group->setLat(0);
-			$group->setLng(0);
+			$group->setTitle($request->get('title'));
+			$group->setDescription($request->get('description'));
 
 			$em->persist($group);
 			$em->flush();
@@ -81,5 +69,22 @@ class GroupController extends ApiController
 		}
 
 		return $this->respondCreated($groupRepository->transform($group));
+	}
+
+
+	/**
+	 * @Route("/group/{id}", methods={"DELETE"})
+	 */
+	public function delete($id, GroupRepository $groupRepository, EntityManagerInterface $em)
+	{
+		$group = $groupRepository->findOneBy(['uuid'=>$id]);
+
+		if (!$group)
+			return $this->respondNotFound();
+
+		$em->remove($group);
+		$em->flush();
+
+		return $this->respondGone();
 	}
 }

@@ -12,14 +12,15 @@ use Doctrine\ORM\Mapping\JoinTable;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
  * @ORM\Table(name="`group`")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Group
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+	/**
+	 * @ORM\Id()
+	 * @ORM\GeneratedValue()
+	 * @ORM\Column(type="integer")
+	 */
 	protected $id;
 
 	/**
@@ -27,148 +28,148 @@ class Group
 	 */
 	private $uuid;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	private $title;
 
-    /**
-     * @ORM\Column(type="string", length=200, nullable=true)
-     */
-    private $image;
+	/**
+	 * @ORM\Column(type="string", length=200, nullable=true)
+	 */
+	private $image;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $description;
+	/**
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	private $description;
 
 	/**
 	 * Many Groups have Many Users.
-	 * @OneToMany(targetEntity="Member", mappedBy="group")
+	 * @OneToMany(targetEntity="Member", mappedBy="group", cascade={"remove"})
 	 */
 	private $militants;
 
-    /**
-     * @ORM\Column(type="date")
-     */
-    private $creation;
+	/**
+	 * @ORM\Column(type="date")
+	 */
+	private $creation;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\News", mappedBy="groups")
-     */
-    private $news;
+	/**
+	 * @ORM\ManyToMany(targetEntity="App\Entity\News", mappedBy="groups")
+	 */
+	private $news;
 
 
 	public function __construct()
-               	{
-               		$this->militants = new ArrayCollection();
-                 $this->news = new ArrayCollection();
-               	}
+	{
+		$this->militants = new ArrayCollection();
+		$this->news = new ArrayCollection();
+	}
 
 	/**
 	 * Triggered on insert
 	 * @ORM\PrePersist
 	 */
 	public function onPrePersist()
-               	{
-               		$this->creation = new \DateTime("now");
-               	}
+	{
+		$this->setCreation( new \DateTime("now") );
+	}
 
 	public function getMilitants(): Collection
-               	{
-               		return $this->militants;
-               	}
+	{
+		return $this->militants;
+	}
 
 	public function getId(): ?int
-               	{
-               		return $this->id;
-               	}
+	{
+		return $this->id;
+	}
 
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
+	public function getTitle(): ?string
+	{
+		return $this->title;
+	}
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
+	public function setTitle(string $title): self
+	{
+		$this->title = $title;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
+	public function getImage(): ?string
+	{
+		return $this->image;
+	}
 
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
+	public function setImage(?string $image): self
+	{
+		$this->image = $image;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
+	public function getDescription(): ?string
+	{
+		return $this->description;
+	}
 
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
+	public function setDescription(?string $description): self
+	{
+		$this->description = $description;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getCreation(): ?\DateTimeInterface
-    {
-        return $this->creation;
-    }
+	public function getCreation(): ?\DateTimeInterface
+	{
+		return $this->creation;
+	}
 
-    public function setCreation(\DateTimeInterface $creation): self
-    {
-        $this->creation = $creation;
+	public function setCreation(\DateTimeInterface $creation): self
+	{
+		$this->creation = $creation;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	public function getUuid(): ?string
-               	{
-               		return $this->uuid;
-               	}
+	{
+		return $this->uuid;
+	}
 
 	public function setUuid(string $uuid): self
-               	{
-               		$this->uuid = $uuid;
-               
-               		return $this;
-               	}
+	{
+		$this->uuid = $uuid;
 
-    /**
-     * @return Collection|News[]
-     */
-    public function getNews(): Collection
-    {
-        return $this->news;
-    }
+		return $this;
+	}
 
-    public function addNews(News $news): self
-    {
-        if (!$this->news->contains($news)) {
-            $this->news[] = $news;
-            $news->addGroup($this);
-        }
+	/**
+	 * @return Collection|News[]
+	 */
+	public function getNews(): Collection
+	{
+		return $this->news;
+	}
 
-        return $this;
-    }
+	public function addNews(News $news): self
+	{
+		if (!$this->news->contains($news)) {
+			$this->news[] = $news;
+			$news->addGroup($this);
+		}
 
-    public function removeNews(News $news): self
-    {
-        if ($this->news->contains($news)) {
-            $this->news->removeElement($news);
-            $news->removeGroup($this);
-        }
+		return $this;
+	}
 
-        return $this;
-    }
+	public function removeNews(News $news): self
+	{
+		if ($this->news->contains($news)) {
+			$this->news->removeElement($news);
+			$news->removeGroup($this);
+		}
+
+		return $this;
+	}
 }

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Event
 {
@@ -66,9 +67,18 @@ class Event
 
 	/**
 	 * Many Events have Many Users.
-	 * @OneToMany(targetEntity="Participant", mappedBy="event")
+	 * @OneToMany(targetEntity="Participant", mappedBy="event", cascade={"remove"})
 	 */
 	private $militants;
+
+	/**
+	 * Triggered on insert
+	 * @ORM\PrePersist
+	 */
+	public function onPrePersist()
+	{
+		$this->setCreation( new \DateTime("now") );
+	}
 
 	public function __construct()
 	{

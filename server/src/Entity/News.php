@@ -5,9 +5,11 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\NewsRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class News
 {
@@ -20,13 +22,14 @@ class News
 
     /**
      * @ORM\Column(type="string", length=200)
+     * @Gedmo\Slug(fields={"title"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $Title;
+    private $title;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -64,7 +67,18 @@ class News
      */
     private $excerpt;
 
-    public function __construct()
+	/**
+	 * Triggered on insert
+	 * @ORM\PrePersist
+	 */
+	public function onPrePersist()
+	{
+		$now = new \DateTime("now");
+		$this->setCreated($now);
+		$this->setUpdated($now);
+	}
+
+	public function __construct()
     {
         $this->groups = new ArrayCollection();
     }
@@ -88,12 +102,12 @@ class News
 
     public function getTitle(): ?string
     {
-        return $this->Title;
+        return $this->title;
     }
 
-    public function setTitle(string $Title): self
+    public function setTitle(string $title): self
     {
-        $this->Title = $Title;
+        $this->title = $title;
 
         return $this;
     }

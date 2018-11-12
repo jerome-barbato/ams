@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MemberRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Member
 {
@@ -41,7 +42,7 @@ class Member
 	 */
 	public function onPrePersist()
 	{
-		$this->inscription = new \DateTime("now");
+		$this->setInscription( new \DateTime("now") );
 	}
 
 	public function getRole(): ?string

@@ -8,12 +8,14 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MilitantRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
-class Militant
+class Militant implements UserInterface
 {
 	/**
 	 * @ORM\Id()
@@ -38,9 +40,20 @@ class Militant
 	private $lastName;
 
 	/**
-	 * @ORM\Column(type="string", length=200)
+	 * @ORM\Column(type="string", length=200, unique=true)
 	 */
 	private $email;
+
+	/**
+	 * @ORM\Column(type="json")
+	 */
+	private $roles = [];
+
+	/**
+	 * @var string The hashed password
+	 * @ORM\Column(type="string")
+	 */
+	private $password;
 
 	/**
 	 * @ORM\Column(type="string", length=255, nullable=true)
@@ -69,188 +82,250 @@ class Militant
 	 */
 	private $place;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\News", mappedBy="author")
-     */
-    private $news;
+	/**
+	 * @ORM\OneToMany(targetEntity="App\Entity\News", mappedBy="author")
+	 */
+	private $news;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Material", mappedBy="owners")
-     */
-    private $materials;
+	/**
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Material", mappedBy="owners")
+	 */
+	private $materials;
 
 	/**
 	 * Triggered on insert
 	 * @ORM\PrePersist
 	 */
 	public function onPrePersist()
-                              	{
-                              		$this->inscription = new \DateTime("now");
-                              	}
+	{
+		$this->setUuid(uniqid());
+		$this->setInscription( new \DateTime("now") );
+	}
 
 	public function __construct()
-                              	{
-                              		$this->groups = new ArrayCollection();
-                              		$this->events = new ArrayCollection();
-                                $this->news = new ArrayCollection();
-                                $this->materials = new ArrayCollection();
-                              	}
+	{
+		$this->groups = new ArrayCollection();
+		$this->events = new ArrayCollection();
+		$this->news = new ArrayCollection();
+		$this->materials = new ArrayCollection();
+	}
 
 	public function getGroups(): Collection
-                              	{
-                              		return $this->groups;
-                              	}
+	{
+		return $this->groups;
+	}
 
 	public function getEvents(): Collection
-                              	{
-                              		return $this->events;
-                              	}
+	{
+		return $this->events;
+	}
 
 	public function getId(): ?int
-                              	{
-                              		return $this->id;
-                              	}
+	{
+		return $this->id;
+	}
 
 	public function getFirstName(): ?string
-                              	{
-                              		return $this->firstName;
-                              	}
+	{
+		return $this->firstName;
+	}
 
 	public function setFirstName(string $firstName): self
-                              	{
-                              		$this->firstName = $firstName;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->firstName = $firstName;
+
+		return $this;
+	}
 
 	public function getLastName(): ?string
-                              	{
-                              		return $this->lastName;
-                              	}
+	{
+		return $this->lastName;
+	}
 
 	public function setLastName(string $lastName): self
-                              	{
-                              		$this->lastName = $lastName;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->lastName = $lastName;
+
+		return $this;
+	}
 
 	public function getEmail(): ?string
-                              	{
-                              		return $this->email;
-                              	}
+	{
+		return $this->email;
+	}
 
 	public function setEmail(string $email): self
-                              	{
-                              		$this->email = $email;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->email = $email;
+
+		return $this;
+	}
 
 	public function getImage(): ?string
-                              	{
-                              		return $this->image;
-                              	}
+	{
+		return $this->image;
+	}
 
 	public function setImage(?string $image): self
-                              	{
-                              		$this->image = $image;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->image = $image;
+
+		return $this;
+	}
 
 	public function getUuid(): ?string
-                              	{
-                              		return $this->uuid;
-                              	}
+	{
+		return $this->uuid;
+	}
 
 	public function setUuid(string $uuid): self
-                              	{
-                              		$this->uuid = $uuid;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->uuid = $uuid;
+
+		return $this;
+	}
 
 	public function getInscription(): ?\DateTimeInterface
-                              	{
-                              		return $this->inscription;
-                              	}
+	{
+		return $this->inscription;
+	}
 
 	public function setInscription(\DateTimeInterface $inscription): self
-                              	{
-                              		$this->inscription = $inscription;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->inscription = $inscription;
+
+		return $this;
+	}
 
 	public function getPlace(): ?Place
-                              	{
-                              		return $this->place;
-                              	}
+	{
+		return $this->place;
+	}
 
 	public function setPlace(?Place $place): self
-                              	{
-                              		$this->place = $place;
-                              
-                              		return $this;
-                              	}
+	{
+		$this->place = $place;
 
-    /**
-     * @return Collection|News[]
-     */
-    public function getNews(): Collection
-    {
-        return $this->news;
-    }
+		return $this;
+	}
 
-    public function addNews(News $news): self
-    {
-        if (!$this->news->contains($news)) {
-            $this->news[] = $news;
-            $news->setAuthor($this);
-        }
+	/**
+	 * @return Collection|News[]
+	 */
+	public function getNews(): Collection
+	{
+		return $this->news;
+	}
 
-        return $this;
-    }
+	public function addNews(News $news): self
+	{
+		if (!$this->news->contains($news)) {
+			$this->news[] = $news;
+			$news->setAuthor($this);
+		}
 
-    public function removeNews(News $news): self
-    {
-        if ($this->news->contains($news)) {
-            $this->news->removeElement($news);
-            // set the owning side to null (unless already changed)
-            if ($news->getAuthor() === $this) {
-                $news->setAuthor(null);
-            }
-        }
+		return $this;
+	}
 
-        return $this;
-    }
+	public function removeNews(News $news): self
+	{
+		if ($this->news->contains($news)) {
+			$this->news->removeElement($news);
+			// set the owning side to null (unless already changed)
+			if ($news->getAuthor() === $this) {
+				$news->setAuthor(null);
+			}
+		}
 
-    /**
-     * @return Collection|Material[]
-     */
-    public function getMaterials(): Collection
-    {
-        return $this->materials;
-    }
+		return $this;
+	}
 
-    public function addMaterial(Material $material): self
-    {
-        if (!$this->materials->contains($material)) {
-            $this->materials[] = $material;
-            $material->addOwner($this);
-        }
+	/**
+	 * @return Collection|Material[]
+	 */
+	public function getMaterials(): Collection
+	{
+		return $this->materials;
+	}
 
-        return $this;
-    }
+	public function addMaterial(Material $material): self
+	{
+		if (!$this->materials->contains($material)) {
+			$this->materials[] = $material;
+			$material->addOwner($this);
+		}
 
-    public function removeMaterial(Material $material): self
-    {
-        if ($this->materials->contains($material)) {
-            $this->materials->removeElement($material);
-            $material->removeOwner($this);
-        }
+		return $this;
+	}
 
-        return $this;
-    }
+	public function removeMaterial(Material $material): self
+	{
+		if ($this->materials->contains($material)) {
+			$this->materials->removeElement($material);
+			$material->removeOwner($this);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * A visual identifier that represents this user.
+	 *
+	 * @see UserInterface
+	 */
+	public function getUsername(): string
+	{
+		return (string) $this->email;
+	}
+
+	/**
+	 * @see UserInterface
+	 */
+	public function getRoles(): array
+	{
+		$roles = $this->roles;
+		// guarantee every user at least has ROLE_USER
+		$roles[] = 'ROLE_USER';
+
+		return array_unique($roles);
+	}
+
+	public function setRoles(array $roles): self
+	{
+		$this->roles = $roles;
+
+		return $this;
+	}
+
+	/**
+	 * @see UserInterface
+	 */
+	public function getPassword(): string
+	{
+		return (string) $this->password;
+	}
+
+	public function setPassword(string $password): self
+	{
+		$this->password = $password;
+
+		return $this;
+	}
+
+	/**
+	 * @see UserInterface
+	 */
+	public function getSalt()
+	{
+		// not needed when using the "bcrypt" algorithm in security.yaml
+	}
+
+	/**
+	 * @see UserInterface
+	 */
+	public function eraseCredentials()
+	{
+		// If you store any temporary, sensitive data on the user, clear it here
+		// $this->plainPassword = null;
+	}
 }
