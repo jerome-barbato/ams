@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Entity\Group;
 use App\Entity\Place;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -31,10 +32,23 @@ class EventRepository extends ServiceEntityRepository
 			'creation'     => (string) $event->getCreation()->format(getenv('DATE_FORMAT')),
 			'image'        => (string) $event->getImage(),
 			'type'         => (string) $event->getType(),
-			'participants' => (int) $event->getMilitants()->count()
+			'participants' => (int) $event->getMilitants()->count(),
+			'groups'       => (int) $event->getGroups()->count(),
 		];
 
 		if( $full ) {
+
+			$data['groups'] = [];
+
+			/* @var $groups Group[] */
+			$groups = $event->getGroups();
+
+			/* @var $groupRepository groupRepository */
+			$groupRepository = $this->getEntityManager()->getRepository('App:Group');
+
+			foreach ($groups as $group){
+				$data['groups'][] = $groupRepository->transform($group);
+			}
 
 			/* @var $placeRepository placeRepository */
 			$placeRepository = $this->getEntityManager()->getRepository('App:Place');

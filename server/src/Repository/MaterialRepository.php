@@ -48,10 +48,15 @@ class MaterialRepository extends ServiceEntityRepository
 			/* @var $placeRepository placeRepository */
 			$placeRepository = $this->getEntityManager()->getRepository('App:Place');
 
-			$data['place']       = $placeRepository->transform($material->getPlace());
-			$data['description'] = $material->getDescription();
-			$data['location']    = $material->getLocation();
-			$data['size']        = $material->getSize();
+			if($place = $material->getPlace())
+				$data['place']       = $placeRepository->transform($material->getPlace());
+			else
+				$data['place']       = false;
+
+			$data['description']   = $material->getDescription();
+			$data['location']      = $material->getLocation();
+			$data['size']          = $material->getSize();
+			$data['quantity_left'] = $material->getQuantity() - $militants->count();
 		}
 
 		return $data;

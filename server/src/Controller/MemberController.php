@@ -72,12 +72,11 @@ class MemberController extends ApiController
 	}
 
 	/**
-	 * @Route("/member/{group_id}", methods={"POST"}))
+	 * @Route("/member/{group_id}/{militant_id}", methods={"POST"}))
 	 */
-	public function add($group_id, Request $request, MilitantRepository $militantRepository, GroupRepository $groupRepository, EntityManagerInterface $em)
+	public function add($group_id, $militant_id, Request $request, MilitantRepository $militantRepository, GroupRepository $groupRepository, EntityManagerInterface $em)
 	{
 		$role = $request->get('role', 'participant');
-		$militant_id = $request->get('militant_id');
 
 		if(!$militant_id)
 			return $this->respondValidationError('Please provide a militant id');
@@ -106,6 +105,7 @@ class MemberController extends ApiController
 			return $this->respondCreated();
 		}
 		catch(\Exception $e){
+
 			return $this->respondWithErrors( $e->getMessage() );
 		}
 	}

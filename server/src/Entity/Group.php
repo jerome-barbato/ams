@@ -59,117 +59,151 @@ class Group
 	 */
 	private $news;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Event", mappedBy="groups")
+     */
+    private $events;
+
 
 	public function __construct()
-	{
-		$this->militants = new ArrayCollection();
-		$this->news = new ArrayCollection();
-	}
+               	{
+               		$this->militants = new ArrayCollection();
+               		$this->news = new ArrayCollection();
+                 $this->events = new ArrayCollection();
+               	}
 
 	/**
 	 * Triggered on insert
 	 * @ORM\PrePersist
 	 */
 	public function onPrePersist()
-	{
-		$this->setCreation( new \DateTime("now") );
-	}
+               	{
+               		$this->setCreation( new \DateTime("now") );
+               	}
 
 	public function getMilitants(): Collection
-	{
-		return $this->militants;
-	}
+               	{
+               		return $this->militants;
+               	}
 
 	public function getId(): ?int
-	{
-		return $this->id;
-	}
+               	{
+               		return $this->id;
+               	}
 
 	public function getTitle(): ?string
-	{
-		return $this->title;
-	}
+               	{
+               		return $this->title;
+               	}
 
 	public function setTitle(string $title): self
-	{
-		$this->title = $title;
-
-		return $this;
-	}
+               	{
+               		$this->title = $title;
+               
+               		return $this;
+               	}
 
 	public function getImage(): ?string
-	{
-		return $this->image;
-	}
+               	{
+               		return $this->image;
+               	}
 
 	public function setImage(?string $image): self
-	{
-		$this->image = $image;
-
-		return $this;
-	}
+               	{
+               		$this->image = $image;
+               
+               		return $this;
+               	}
 
 	public function getDescription(): ?string
-	{
-		return $this->description;
-	}
+               	{
+               		return $this->description;
+               	}
 
 	public function setDescription(?string $description): self
-	{
-		$this->description = $description;
-
-		return $this;
-	}
+               	{
+               		$this->description = $description;
+               
+               		return $this;
+               	}
 
 	public function getCreation(): ?\DateTimeInterface
-	{
-		return $this->creation;
-	}
+               	{
+               		return $this->creation;
+               	}
 
 	public function setCreation(\DateTimeInterface $creation): self
-	{
-		$this->creation = $creation;
-
-		return $this;
-	}
+               	{
+               		$this->creation = $creation;
+               
+               		return $this;
+               	}
 
 	public function getUuid(): ?string
-	{
-		return $this->uuid;
-	}
+               	{
+               		return $this->uuid;
+               	}
 
 	public function setUuid(string $uuid): self
-	{
-		$this->uuid = $uuid;
-
-		return $this;
-	}
+               	{
+               		$this->uuid = $uuid;
+               
+               		return $this;
+               	}
 
 	/**
 	 * @return Collection|News[]
 	 */
 	public function getNews(): Collection
-	{
-		return $this->news;
-	}
+               	{
+               		return $this->news;
+               	}
 
 	public function addNews(News $news): self
-	{
-		if (!$this->news->contains($news)) {
-			$this->news[] = $news;
-			$news->addGroup($this);
-		}
-
-		return $this;
-	}
+               	{
+               		if (!$this->news->contains($news)) {
+               			$this->news[] = $news;
+               			$news->addGroup($this);
+               		}
+               
+               		return $this;
+               	}
 
 	public function removeNews(News $news): self
-	{
-		if ($this->news->contains($news)) {
-			$this->news->removeElement($news);
-			$news->removeGroup($this);
-		}
+               	{
+               		if ($this->news->contains($news)) {
+               			$this->news->removeElement($news);
+               			$news->removeGroup($this);
+               		}
+               
+               		return $this;
+               	}
 
-		return $this;
-	}
+    /**
+     * @return Collection|Event[]
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->addGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->contains($event)) {
+            $this->events->removeElement($event);
+            $event->removeGroup($this);
+        }
+
+        return $this;
+    }
 }

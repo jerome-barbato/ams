@@ -34,12 +34,11 @@ class ParticipantController extends ApiController
 	}
 
 	/**
-	 * @Route("/participant/{event_id}", methods={"POST"}))
+	 * @Route("/participant/{event_id}/{militant_id}", methods={"POST"}))
 	 */
-	public function add($event_id, Request $request, MilitantRepository $militantRepository, EventRepository $eventRepository, EntityManagerInterface $em)
+	public function add($event_id, $militant_id, Request $request, MilitantRepository $militantRepository, EventRepository $eventRepository, EntityManagerInterface $em)
 	{
 		$role = $request->get('role', 'participant');
-		$militant_id = $request->get('militant_id');
 
 		if(!$militant_id)
 			return $this->respondValidationError('Please provide a militant id');

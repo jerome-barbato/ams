@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MaterialRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Material
 {
@@ -65,7 +66,7 @@ class Material
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Place")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $place;
 
@@ -74,7 +75,16 @@ class Material
      */
     private $owners;
 
-    public function __construct()
+	/**
+	 * Triggered on insert
+	 * @ORM\PrePersist
+	 */
+	public function onPrePersist()
+	{
+		$this->setUuid(uniqid());
+	}
+
+	public function __construct()
     {
         $this->owners = new ArrayCollection();
     }

@@ -29,7 +29,7 @@ class NewsRepository extends ServiceEntityRepository
 			'image'   => (string) $news->getImage(),
 			'excerpt' => (string) $news->getExcerpt(),
 			'created' => (string) $news->getCreated()->format(getenv('DATETIME_FORMAT')),
-			'groups'  => $news->getGroups()->count()
+			'groups'  => (int) $news->getGroups()->count()
 		];
 
 		if( $full ) {

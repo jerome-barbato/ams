@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Repository\EventRepository;
+use App\Repository\GroupRepository;
 use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +48,7 @@ class EventController extends ApiController
 	 * @Route("/event", methods={"POST"})
 	 * @throws \Exception
 	 */
-	public function create(Request $request, PlaceRepository $placeRepository, EventRepository $eventRepository, EntityManagerInterface $em)
+	public function create(Request $request, PlaceRepository $placeRepository, EventRepository $eventRepository, GroupRepository $groupRepository, EntityManagerInterface $em)
 	{
 		// validate the fields
 		$fields = ['title','address','postal_code','city','country'];
@@ -75,7 +76,7 @@ class EventController extends ApiController
 				$event->setBegin($begin);
 			}
 
-			if($request->get('begin')){
+			if($request->get('end')){
 
 				$end = \DateTime::createFromFormat(getenv('DATETIME_FORMAT'), $request->get('end'));
 				if(!$end)
@@ -83,6 +84,17 @@ class EventController extends ApiController
 
 				$event->setEnd($end);
 			}
+
+			$group = false;
+
+			if($group_id = $request->get('group_id')){
+
+				if(!$group = $groupRepository->findOneBy(['uuid'=>$group_id]))
+					return $this->respondValidationError('Please provide a valid group id');
+			}
+
+			if($group)
+				$event->addGroup($group);
 
 			$place = new Place();
 

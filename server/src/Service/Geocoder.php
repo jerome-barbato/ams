@@ -32,14 +32,19 @@ class Geocoder
 
 		$context_options= [
 			'http'=> [
-				'timeout' => 5
+				'timeout' => 3
 			],
 			'ssl'=>[
 				'verify_peer'=>false,
 				'verify_peer_name'=>false,
 			]
 		];
-		$geocode = file_get_contents('https://maps.google.com/maps/api/geocode/json?address='.urlencode($this->raw_address).'&sensor=false&key='.urlencode(getenv('GMAP_API_KEY')),false, stream_context_create($context_options));
+
+		$geocode = @file_get_contents('https://maps.google.com/maps/api/geocode/json?address='.urlencode($this->raw_address).'&sensor=false&key='.urlencode(getenv('GMAP_API_KEY')),false, stream_context_create($context_options));
+
+		if($geocode === false)
+			throw new \Exception('Google maps connection timed out');
+
 		$geocode = json_decode($geocode);
 
 		if( $geocode->status != 'OK' )

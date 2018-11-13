@@ -2,8 +2,12 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Material;
+use App\Entity\Place;
 use App\Repository\EventRepository;
 use App\Repository\MaterialRepository;
+use App\Repository\MilitantRepository;
+use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,7 +31,7 @@ class MaterialController extends ApiController
 
 
 	/**
-	 * @Route("/materials/{id}", methods={"GET"})
+	 * @Route("/material/{id}", methods={"GET"})
 	 */
 	public function show($id, MaterialRepository $materialRepository)
 	{
@@ -43,44 +47,83 @@ class MaterialController extends ApiController
 
 
 	/**
-	 * @Route("/events", methods={"POST"})
+	 * @Route("/material/{id}", methods={"DELETE"})
 	 */
-	public function create(Request $request, EventRepository $eventRepository, EntityManagerInterface $em)
+	public function delete($id, MaterialRepository $materialRepository, EntityManagerInterface $em)
 	{
-		$request = $this->transformJsonBody($request);
+		$material = $materialRepository->findOneBy(['uuid'=>$id]);
 
-		if (!$request)
-			return $this->respondValidationError('Please provide a valid request!');
+		if (!$material)
+			return $this->respondNotFound();
 
+		$em->remove($material);
+		$em->flush();
+
+		return $this->respondGone();
+	}
+
+
+	/**
+	 * @Route("/material", methods={"POST"})
+	 */
+	public function create(Request $request, MaterialRepository $materialRepository, PlaceRepository $placeRepository, MilitantRepository $militantRepository, EntityManagerInterface $em)
+	{
 		// validate the fields
-		$fields = ['first_name','last_name','email','address','postal_code','city','country'];
+		$fields = ['quantity','name'];
 		foreach ($fields as $field){
 			if (!$request->get($field)) {
 				return $this->respondValidationError('Please provide a '.str_replace('_', ' ', $field).'!');
 			}
 		}
 
-		// persist the new event
+		// persist the new material
 		try{
-			$event = new Event();
-			$event->setUuid(uniqid());
-			$event->setFirstName($request->get('first_name'));
-			$event->setLastName($request->get('last_name'));
-			$event->setEmail($request->get('email'));
-			$event->setAddress($request->get('address'));
-			$event->setPostalCode($request->get('postal_code'));
-			$event->setCity($request->get('city'));
-			$event->setCountry($request->get('country'));
-			$event->setLat(0);
-			$event->setLng(0);
+			$material = new Material();
+			$material->setName($request->get('name'));
+			$material->setDescription($request->get('description'));
+			$material->setType($request->get('type'));
+			$material->setImage($request->get('image'));
+			$material->setLocation($request->get('location'));
+			$material->setQuantity($request->get('quantity'));
+			$material->setSize($request->get('size'));
+			$material->setTheme($request->get('theme'));
 
-			$em->persist($event);
+			if($militant_id = $request->get('militant_id')){
+
+				$militant = $militantRepository->findOneBy(['uuid'=>$militant_id]);
+				if($militant)
+					$material->addOwner($militant);
+			}
+
+
+			if($request->get('address') && $request->get('postal_code') && $request->get('city')){
+
+				$place = new Place();
+				$place->setTitle($request->get('place_title', 'Local'));
+				$place->setAddress($request->get('address'));
+				$place->setPostalCode($request->get('postal_code'));
+				$place->setCity($request->get('city'));
+				$place->setCountry($request->get('country'));
+				$place->geocode();
+
+				if(!$place->hasError() && $existingPlace = $placeRepository->findOneBy(['gid'=>$place->getGid()])){
+
+					$material->setPlace($existingPlace);
+				}
+				else{
+
+					$material->setPlace($place);
+					$em->persist($place);
+				}
+			}
+
+			$em->persist($material);
 			$em->flush();
 		}
 		catch(\Exception $e){
 			return $this->respondWithErrors( $e->getMessage() );
 		}
 
-		return $this->respondCreated($eventRepository->transform($event));
+		return $this->respondCreated($materialRepository->transform($material));
 	}
 }
