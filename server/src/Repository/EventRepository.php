@@ -32,7 +32,7 @@ class EventRepository extends ServiceEntityRepository
 			'creation'     => (string) $event->getCreation()->format(getenv('DATE_FORMAT')),
 			'image'        => (string) $event->getImage(),
 			'type'         => (string) $event->getType(),
-			'participants' => (int) $event->getMilitants()->count(),
+			'participants' => (int) $event->getUsers()->count(),
 			'groups'       => (int) $event->getGroups()->count(),
 		];
 

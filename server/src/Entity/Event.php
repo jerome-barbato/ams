@@ -69,7 +69,7 @@ class Event
 	 * Many Events have Many Users.
 	 * @OneToMany(targetEntity="Participant", mappedBy="event", cascade={"remove"})
 	 */
-	private $militants;
+	private $users;
 
 	/**
 	 * @ORM\ManyToMany(targetEntity="App\Entity\Group", inversedBy="events")
@@ -87,7 +87,7 @@ class Event
 
 	public function __construct()
 	{
-		$this->militants = new ArrayCollection();
+		$this->users = new ArrayCollection();
 		$this->groups = new ArrayCollection();
 	}
 
@@ -204,9 +204,9 @@ class Event
 		return $this;
 	}
 
-	public function getMilitants(): Collection
+	public function getUsers(): Collection
 	{
-		return $this->militants;
+		return $this->users;
 	}
 
 	/**

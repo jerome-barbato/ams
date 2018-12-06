@@ -3,7 +3,7 @@ namespace App\Controller;
 
 use App\Entity\News;
 use App\Repository\GroupRepository;
-use App\Repository\MilitantRepository;
+use App\Repository\UserRepository;
 use App\Repository\NewsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,18 +61,18 @@ class NewsController extends ApiController
 	/**
 	 * @Route("/news", methods={"POST"})
 	 */
-	public function create(Request $request, NewsRepository $newsRepository, MilitantRepository $militantRepository, GroupRepository $groupRepository, EntityManagerInterface $em)
+	public function create(Request $request, NewsRepository $newsRepository, UserRepository $userRepository, GroupRepository $groupRepository, EntityManagerInterface $em)
 	{
 		// validate the fields
-		$fields = ['title', 'militant_id'];
+		$fields = ['title', 'user_id'];
 		foreach ($fields as $field){
 			if (!$request->get($field)) {
 				return $this->respondValidationError('Please provide a '.str_replace('_', ' ', $field).'!');
 			}
 		}
 
-		if(!$militant = $militantRepository->findOneBy(['uuid'=>$request->get('militant_id')]))
-			return $this->respondValidationError('Please provide a valid militant id');
+		if(!$user = $userRepository->findOneBy(['uuid'=>$request->get('user_id')]))
+			return $this->respondValidationError('Please provide a valid user id');
 
 		$group = false;
 
@@ -89,7 +89,7 @@ class NewsController extends ApiController
 			$news->setExcerpt($request->get('excerpt', ''));
 			$news->setImage($request->get('image',''));
 			$news->setText($request->get('text',''));
-			$news->setAuthor($militant);
+			$news->setAuthor($user);
 
 			if($group)
 				$news->addGroup($group);

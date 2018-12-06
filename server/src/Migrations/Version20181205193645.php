@@ -8,16 +8,17 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20181102173824 extends AbstractMigration
+final class Version20181205193645 extends AbstractMigration
 {
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE participant ADD role ENUM(\'participant\', \'referent\', \'peacekeeper\'), DROP member');
+        $this->addSql('ALTER TABLE participant CHANGE role role ENUM(\'participant\', \'referent\', \'peacekeeper\')');
+        $this->addSql('ALTER TABLE auth_token ADD ip VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE event CHANGE type type ENUM(\'meeting\', \'protest\')');
-        $this->addSql('ALTER TABLE member ADD role ENUM(\'participant\', \'referent\'), DROP member');
+        $this->addSql('ALTER TABLE member CHANGE role role ENUM(\'participant\', \'referent\')');
     }
 
     public function down(Schema $schema) : void
@@ -25,8 +26,9 @@ final class Version20181102173824 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('ALTER TABLE auth_token DROP ip');
         $this->addSql('ALTER TABLE event CHANGE type type VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
-        $this->addSql('ALTER TABLE member ADD member VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci, DROP role');
-        $this->addSql('ALTER TABLE participant ADD member VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci, DROP role');
+        $this->addSql('ALTER TABLE member CHANGE role role VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
+        $this->addSql('ALTER TABLE participant CHANGE role role VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
     }
 }

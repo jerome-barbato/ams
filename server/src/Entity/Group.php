@@ -47,7 +47,7 @@ class Group
 	 * Many Groups have Many Users.
 	 * @OneToMany(targetEntity="Member", mappedBy="group", cascade={"remove"})
 	 */
-	private $militants;
+	private $users;
 
 	/**
 	 * @ORM\Column(type="date")
@@ -67,7 +67,7 @@ class Group
 
 	public function __construct()
                	{
-               		$this->militants = new ArrayCollection();
+               		$this->users = new ArrayCollection();
                		$this->news = new ArrayCollection();
                  $this->events = new ArrayCollection();
                	}
@@ -81,9 +81,9 @@ class Group
                		$this->setCreation( new \DateTime("now") );
                	}
 
-	public function getMilitants(): Collection
+	public function getUsers(): Collection
                	{
-               		return $this->militants;
+               		return $this->users;
                	}
 
 	public function getId(): ?int

@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Group;
-use App\Entity\Militant;
+use App\Entity\User;
 use App\Entity\News;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -46,13 +46,13 @@ class NewsRepository extends ServiceEntityRepository
 				$data['groups'][] = $groupRepository->transform($group);
 			}
 
-			/* @var $militantRepository militantRepository */
-			$militantRepository = $this->getEntityManager()->getRepository('App:Militant');
+			/* @var $userRepository userRepository */
+			$userRepository = $this->getEntityManager()->getRepository('App:User');
 
-			/* @var $militant Militant */
-			$militant = $news->getAuthor();
+			/* @var $user User */
+			$user = $news->getAuthor();
 
-			$data['author']  = $militantRepository->transform($militant);
+			$data['author']  = $userRepository->transform($user);
 			$data['updated'] = $news->getUpdated()->format(getenv('DATETIME_FORMAT'));
 			$data['text']    = $news->getText();
 		}

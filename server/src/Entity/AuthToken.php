@@ -23,16 +23,21 @@ class AuthToken
 	protected $value;
 
 	/**
+	 * @ORM\Column(type="string", length=16)
+	 */
+	protected $ip_hash;
+
+	/**
 	 * @ORM\Column(type="datetime")
 	 * @var \DateTime
 	 */
 	protected $createdAt;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="Militant")
-	 * @var Militant
+	 * @ORM\ManyToOne(targetEntity="User", inversedBy="authTokens")
+	 * @var User
 	 */
-	protected $militant;
+	protected $user;
 
 	/**
 	 * Triggered on insert
@@ -76,13 +81,28 @@ class AuthToken
 		$this->createdAt = $createdAt;
 	}
 
-	public function getMilitant()
+	public function getUser()
 	{
-		return $this->militant;
+		return $this->user;
 	}
 
-	public function setMilitant(Militant $militant)
+	public function setUser(User $user)
 	{
-		$this->militant = $militant;
+		$this->user = $user;
+	}
+
+	public function getIpHash()
+	{
+		return $this->ip_hash;
+	}
+
+	public function setIpHash($ip_hash): void
+	{
+		$this->ip_hash = $ip_hash;
+	}
+
+	public static function anonymizeIp( $ip )
+	{
+		return substr(sha1($ip), 0, 16);
 	}
 }

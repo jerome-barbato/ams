@@ -19,14 +19,14 @@ class Member
 
 	/**
 	 * @ORM\Id()
-	 * @ORM\ManyToOne(targetEntity="Militant", inversedBy="groups")
-	 * @ORM\JoinColumn(name="militant_id", referencedColumnName="id", nullable=false)
+	 * @ORM\ManyToOne(targetEntity="User", inversedBy="groups")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
 	 */
-	private $militant;
+	private $user;
 
 	/**
 	 * @ORM\Id()
-	 * @ORM\ManyToOne(targetEntity="Group", inversedBy="militants")
+	 * @ORM\ManyToOne(targetEntity="Group", inversedBy="users")
 	 * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
 	 */
 	private $group;
@@ -57,14 +57,14 @@ class Member
 		return $this;
 	}
 
-	public function getMilitant()
+	public function getUser()
 	{
-		return $this->militant;
+		return $this->user;
 	}
 
-	public function setMilitant(Militant $militant): self
+	public function setUser(User $user): self
 	{
-		$this->militant = $militant;
+		$this->user = $user;
 
 		return $this;
 	}

@@ -71,7 +71,7 @@ class Material
     private $place;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Militant", inversedBy="materials")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="materials")
      */
     private $owners;
 
@@ -215,14 +215,14 @@ class Material
     }
 
     /**
-     * @return Collection|Militant[]
+     * @return Collection|User[]
      */
     public function getOwners(): Collection
     {
         return $this->owners;
     }
 
-    public function addOwner(Militant $owner): self
+    public function addOwner(User $owner): self
     {
         if (!$this->owners->contains($owner)) {
             $this->owners[] = $owner;
@@ -231,7 +231,7 @@ class Material
         return $this;
     }
 
-    public function removeOwner(Militant $owner): self
+    public function removeOwner(User $owner): self
     {
         if ($this->owners->contains($owner)) {
             $this->owners->removeElement($owner);

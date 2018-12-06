@@ -52,7 +52,7 @@ class News
     private $image;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Militant", inversedBy="news")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="news")
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
@@ -160,12 +160,12 @@ class News
         return $this;
     }
 
-    public function getAuthor(): ?Militant
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
 
-    public function setAuthor(?Militant $author): self
+    public function setAuthor(?User $author): self
     {
         $this->author = $author;
 

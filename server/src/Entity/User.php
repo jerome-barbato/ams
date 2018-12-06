@@ -12,10 +12,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\MilitantRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Militant implements UserInterface
+class User implements UserInterface
 {
 	/**
 	 * @ORM\Id()
@@ -61,14 +61,14 @@ class Militant implements UserInterface
 	private $image;
 
 	/**
-	 * Many Militants can be in Many Groups.
-	 * @OneToMany(targetEntity="Member", mappedBy="militant")
+	 * Many Users can be in Many Groups.
+	 * @OneToMany(targetEntity="Member", mappedBy="user")
 	 */
 	private $groups;
 
 	/**
-	 * Many Militants can be in Many event.
-	 * @OneToMany(targetEntity="Participant", mappedBy="militant")
+	 * Many Users can be in Many event.
+	 * @OneToMany(targetEntity="Participant", mappedBy="user")
 	 */
 	private $events;
 
@@ -83,14 +83,19 @@ class Militant implements UserInterface
 	private $place;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\News", mappedBy="author")
+	 * @ORM\OneToMany(targetEntity="News", mappedBy="author")
 	 */
 	private $news;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Material", mappedBy="owners")
+	 * @ORM\ManyToMany(targetEntity="Material", mappedBy="owners")
 	 */
 	private $materials;
+
+	/**
+	 * @ORM\OneToMany(targetEntity="AuthToken", mappedBy="user", orphanRemoval=true)
+	 */
+	private $authTokens;
 
 	/**
 	 * Triggered on insert
@@ -108,6 +113,7 @@ class Militant implements UserInterface
 		$this->events = new ArrayCollection();
 		$this->news = new ArrayCollection();
 		$this->materials = new ArrayCollection();
+		$this->authTokens = new ArrayCollection();
 	}
 
 	public function getGroups(): Collection
@@ -327,5 +333,36 @@ class Militant implements UserInterface
 	{
 		// If you store any temporary, sensitive data on the user, clear it here
 		// $this->plainPassword = null;
+	}
+
+	/**
+	 * @return Collection|AuthToken[]
+	 */
+	public function getAuthTokens(): Collection
+	{
+		return $this->authTokens;
+	}
+
+	public function addAuthToken(authToken $authToken): self
+	{
+		if (!$this->authTokens->contains($authToken)) {
+			$this->authTokens[] = $authToken;
+			$authToken->setUser($this);
+		}
+
+		return $this;
+	}
+
+	public function removeAuthToken(authToken $authToken): self
+	{
+		if ($this->authTokens->contains($authToken)) {
+			$this->authTokens->removeElement($authToken);
+			// set the owning side to null (unless already changed)
+			if ($authToken->getUser() === $this) {
+				$authToken->setUser(null);
+			}
+		}
+
+		return $this;
 	}
 }

@@ -2,7 +2,7 @@
 namespace App\Security;
 
 use App\Entity\AuthToken;
-use App\Entity\Militant;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +29,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 	 */
 	public function supports(Request $request)
 	{
-		return $request->headers->has('X-AUTH-TOKEN');
+		return $request->headers->has('authorization');
 	}
 
 	/**
@@ -39,7 +39,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 	public function getCredentials(Request $request)
 	{
 		return array(
-			'token' => $request->headers->get('X-AUTH-TOKEN')
+			'token' => str_replace('Bearer ', '', $request->headers->get('authorization'))
 		);
 	}
 
@@ -56,9 +56,9 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 		if( !$authToken )
 			return;
 
-		//@todo: check token expiration
+		//@todo: check token expiration, ip
 
-		return $authToken->getMilitant();
+		return $authToken->getUser();
 	}
 
 	public function checkCredentials($credentials, UserInterface $user)

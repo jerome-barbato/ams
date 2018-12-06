@@ -6,7 +6,7 @@ use App\Entity\Material;
 use App\Entity\Place;
 use App\Repository\EventRepository;
 use App\Repository\MaterialRepository;
-use App\Repository\MilitantRepository;
+use App\Repository\UserRepository;
 use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,7 +66,7 @@ class MaterialController extends ApiController
 	/**
 	 * @Route("/material", methods={"POST"})
 	 */
-	public function create(Request $request, MaterialRepository $materialRepository, PlaceRepository $placeRepository, MilitantRepository $militantRepository, EntityManagerInterface $em)
+	public function create(Request $request, MaterialRepository $materialRepository, PlaceRepository $placeRepository, UserRepository $userRepository, EntityManagerInterface $em)
 	{
 		// validate the fields
 		$fields = ['quantity','name'];
@@ -88,11 +88,11 @@ class MaterialController extends ApiController
 			$material->setSize($request->get('size'));
 			$material->setTheme($request->get('theme'));
 
-			if($militant_id = $request->get('militant_id')){
+			if($user_id = $request->get('user_id')){
 
-				$militant = $militantRepository->findOneBy(['uuid'=>$militant_id]);
-				if($militant)
-					$material->addOwner($militant);
+				$user = $userRepository->findOneBy(['uuid'=>$user_id]);
+				if($user)
+					$material->addOwner($user);
 			}
 
 

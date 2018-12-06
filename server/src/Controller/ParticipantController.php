@@ -4,7 +4,7 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Repository\EventRepository;
 use App\Repository\ParticipantRepository;
-use App\Repository\MilitantRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +14,7 @@ class ParticipantController extends ApiController
 	/**
 	 * @Route("/participants/{event_id}/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function show($event_id, $page=0, ParticipantRepository $participantRepository, MilitantRepository $militantRepository, EventRepository $eventRepository)
+	public function show($event_id, $page=0, ParticipantRepository $participantRepository, UserRepository $userRepository, EventRepository $eventRepository)
 	{
 		$event = $eventRepository->findOneBy(['uuid'=>$event_id]);
 		$participants = $participantRepository->findBy(['event'=>$event], ['inscription'=>'ASC'], getenv('LIMIT'), $page);
@@ -24,7 +24,7 @@ class ParticipantController extends ApiController
 		foreach ($participants as $participant){
 
 			$participantsArray[] = [
-				'militant' => $militantRepository->transform($participant->getMilitant()),
+				'user' => $userRepository->transform($participant->getUser()),
 				'role'  => $participant->getRole(),
 				'inscription' => $participant->getInscription()->format(getenv('DATE_FORMAT'))
 			];
@@ -34,18 +34,18 @@ class ParticipantController extends ApiController
 	}
 
 	/**
-	 * @Route("/participant/{event_id}/{militant_id}", methods={"POST"}))
+	 * @Route("/participant/{event_id}/{user_id}", methods={"POST"}))
 	 */
-	public function add($event_id, $militant_id, Request $request, MilitantRepository $militantRepository, EventRepository $eventRepository, EntityManagerInterface $em)
+	public function add($event_id, $user_id, Request $request, UserRepository $userRepository, EventRepository $eventRepository, EntityManagerInterface $em)
 	{
 		$role = $request->get('role', 'participant');
 
-		if(!$militant_id)
-			return $this->respondValidationError('Please provide a militant id');
+		if(!$user_id)
+			return $this->respondValidationError('Please provide a user id');
 
-		$militant = $militantRepository->findOneBy(['uuid'=>$militant_id]);
-		if(!$militant)
-			return $this->respondValidationError('The militant does not exist');
+		$user = $userRepository->findOneBy(['uuid'=>$user_id]);
+		if(!$user)
+			return $this->respondValidationError('The user does not exist');
 
 		if(!$event_id)
 			return $this->respondValidationError('Please provide a event id');
@@ -55,7 +55,7 @@ class ParticipantController extends ApiController
 			return $this->respondValidationError('The event does not exist');
 
 		$participant = new Participant();
-		$participant->setMilitant($militant);
+		$participant->setUser($user);
 		$participant->setEvent($event);
 		$participant->setRole($role);
 
@@ -73,9 +73,9 @@ class ParticipantController extends ApiController
 	
 
 	/**
-	 * @Route("/participant/{event_id}/{militant_id}", methods={"DELETE"}))
+	 * @Route("/participant/{event_id}/{user_id}", methods={"DELETE"}))
 	 */
-	public function delete($event_id, $militant_id, MilitantRepository $militantRepository, EventRepository $eventRepository, ParticipantRepository $participantRepository, EntityManagerInterface $em)
+	public function delete($event_id, $user_id, UserRepository $userRepository, EventRepository $eventRepository, ParticipantRepository $participantRepository, EntityManagerInterface $em)
 	{
 		if(!$event_id)
 			return $this->respondValidationError('Please provide an event id');
@@ -83,13 +83,13 @@ class ParticipantController extends ApiController
 		if(!$event = $eventRepository->findOneBy(['uuid'=>$event_id]))
 			return $this->respondNotFound('Please provide a valid event id');
 
-		if(!$militant_id)
-			return $this->respondValidationError('Please provide a militant id');
+		if(!$user_id)
+			return $this->respondValidationError('Please provide a user id');
 
-		if(!$militant = $militantRepository->findOneBy(['uuid'=>$militant_id]))
-			return $this->respondNotFound('Please provide a valid militant id');
+		if(!$user = $userRepository->findOneBy(['uuid'=>$user_id]))
+			return $this->respondNotFound('Please provide a valid user id');
 
-		$participations = $participantRepository->findBy(['militant'=>$militant, 'event'=>$event]);
+		$participations = $participantRepository->findBy(['user'=>$user, 'event'=>$event]);
 
 		if(!$participations || !count($participations))
 			return $this->respondNotFound();

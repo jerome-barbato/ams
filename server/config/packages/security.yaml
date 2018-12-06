@@ -1,6 +1,6 @@
 security:
     encoders:
-        App\Entity\Militant:
+        App\Entity\User:
             algorithm: bcrypt
 
     role_hierarchy:
@@ -13,7 +13,7 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
-                class: App\Entity\Militant
+                class: App\Entity\User
                 property: email
     firewalls:
         dev:

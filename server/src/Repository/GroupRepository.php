@@ -26,7 +26,7 @@ class GroupRepository extends ServiceEntityRepository
 			'title'        => (string) $group->getTitle(),
 			'description'  => (string) $group->getDescription(),
 			'creation'     => (string) $group->getCreation()->format(getenv('DATE_FORMAT')),
-			'participants' => (int) $group->getMilitants()->count(),
+			'participants' => (int) $group->getUsers()->count(),
 			'news'         => (int) $group->getNews()->count()
 		];
 	}

@@ -8,15 +8,16 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20181102143434 extends AbstractMigration
+final class Version20181205221311 extends AbstractMigration
 {
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE role CHANGE role role ENUM(\'participant\', \'referent\')');
-        $this->addSql('ALTER TABLE militant ADD uuid VARCHAR(13) NOT NULL');
+        $this->addSql('ALTER TABLE participant CHANGE role role ENUM(\'participant\', \'referent\', \'peacekeeper\')');
+        $this->addSql('ALTER TABLE event CHANGE type type ENUM(\'meeting\', \'protest\')');
+        $this->addSql('ALTER TABLE member CHANGE role role ENUM(\'participant\', \'referent\')');
     }
 
     public function down(Schema $schema) : void
@@ -24,7 +25,8 @@ final class Version20181102143434 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE militant DROP uuid');
-        $this->addSql('ALTER TABLE role CHANGE role role VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
+        $this->addSql('ALTER TABLE event CHANGE type type VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
+        $this->addSql('ALTER TABLE member CHANGE role role VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
+        $this->addSql('ALTER TABLE participant CHANGE role role VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
     }
 }

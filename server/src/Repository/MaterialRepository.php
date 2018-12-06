@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Material;
-use App\Entity\Militant;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -35,14 +35,14 @@ class MaterialRepository extends ServiceEntityRepository
 
 			$data['owners'] = [];
 
-			/* @var $militant Militant[] */
-			$militants = $material->getOwners();
+			/* @var $user User[] */
+			$users = $material->getOwners();
 
-			/* @var $militantRepository militantRepository */
-			$militantRepository = $this->getEntityManager()->getRepository('App:Militant');
+			/* @var $userRepository userRepository */
+			$userRepository = $this->getEntityManager()->getRepository('App:User');
 
-			foreach ($militants as $militant){
-				$data['owners'][] = $militantRepository->transform($militant);
+			foreach ($users as $user){
+				$data['owners'][] = $userRepository->transform($user);
 			}
 
 			/* @var $placeRepository placeRepository */
@@ -56,7 +56,7 @@ class MaterialRepository extends ServiceEntityRepository
 			$data['description']   = $material->getDescription();
 			$data['location']      = $material->getLocation();
 			$data['size']          = $material->getSize();
-			$data['quantity_left'] = $material->getQuantity() - $militants->count();
+			$data['quantity_left'] = $material->getQuantity() - $users->count();
 		}
 
 		return $data;
