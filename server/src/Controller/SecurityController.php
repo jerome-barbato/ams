@@ -12,6 +12,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * Class SecurityController
+ * @package App\Controller
+ */
 class SecurityController extends ApiController
 {
 	/**
@@ -48,15 +52,15 @@ class SecurityController extends ApiController
 		if( !$authToken ){
 
 			$authToken = new AuthToken();
-			$authToken->setUser($user);
-			$authToken->setIpHash($client_ip_hash);
+			$authToken->setUser($user)
+				->setIpHash($client_ip_hash);
 
 			$em->persist($authToken);
 			$em->flush();
 		}
 
 		return $this->respond([
-			'auth_token' => $authToken->getValue(),
+			'bearer_token' => $authToken->getValue(),
 			'user' => $userRepository->transform($user)
 		]);
 	}

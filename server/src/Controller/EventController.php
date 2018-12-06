@@ -9,13 +9,19 @@ use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class EventController
+ * @package App\Controller
+ * @IsGranted("ROLE_USER")
+ */
 class EventController extends ApiController
 {
 	/**
 	 * @Route("/events/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function list($page=0, EventRepository $eventRepository)
+	public function list(EventRepository $eventRepository, $page=0)
 	{
 		$events = $eventRepository->findBy([], ['begin'=>'ASC'], getenv('LIMIT'), $page);
 		$eventsArray = [];
@@ -98,8 +104,7 @@ class EventController extends ApiController
 
 			$place = new Place();
 
-			$place->setTitle($request->get('place_title', 'Unknown'))
-				->setAddress($request->get('address'))
+			$place->setAddress($request->get('address'))
 				->setPostalCode($request->get('postal_code'))
 				->setCity($request->get('city'))
 				->setCountry($request->get('country'));

@@ -8,7 +8,13 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class ParticipantController
+ * @package App\Controller
+ * @IsGranted("ROLE_USER")
+ */
 class ParticipantController extends ApiController
 {
 	/**
@@ -55,9 +61,9 @@ class ParticipantController extends ApiController
 			return $this->respondValidationError('The event does not exist');
 
 		$participant = new Participant();
-		$participant->setUser($user);
-		$participant->setEvent($event);
-		$participant->setRole($role);
+		$participant->setUser($user)
+			->setEvent($event)
+			->setRole($role);
 
 		try{
 

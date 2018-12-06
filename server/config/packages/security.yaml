@@ -21,9 +21,6 @@ security:
             security: false
         main:
             anonymous: true
-            logout:
-                path:   app_logout
-
             guard:
                 authenticators:
                 - App\Security\TokenAuthenticator

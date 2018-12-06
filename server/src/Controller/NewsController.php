@@ -8,7 +8,13 @@ use App\Repository\NewsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class NewsController
+ * @package App\Controller
+ * @IsGranted("ROLE_USER")
+ */
 class NewsController extends ApiController
 {
 	/**
@@ -85,11 +91,11 @@ class NewsController extends ApiController
 		// persist the new news
 		try{
 			$news = new News();
-			$news->setTitle($request->get('title'));
-			$news->setExcerpt($request->get('excerpt', ''));
-			$news->setImage($request->get('image',''));
-			$news->setText($request->get('text',''));
-			$news->setAuthor($user);
+			$news->setTitle($request->get('title'))
+				->setExcerpt($request->get('excerpt', ''))
+				->setImage($request->get('image',''))
+				->setText($request->get('text',''))
+				->setAuthor($user);
 
 			if($group)
 				$news->addGroup($group);

@@ -6,13 +6,19 @@ use App\Repository\GroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class GroupController
+ * @package App\Controller
+ * @IsGranted("ROLE_USER")
+ */
 class GroupController extends ApiController
 {
 	/**
 	 * @Route("/groups/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function list($page=0, GroupRepository $groupRepository)
+	public function list(GroupRepository $groupRepository, $page=0)
 	{
 		$groups = $groupRepository->findBy([], ['creation'=>'ASC'], getenv('LIMIT'), $page);
 		$groupsArray = [];

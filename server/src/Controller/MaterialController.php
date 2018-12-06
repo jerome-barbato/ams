@@ -11,13 +11,19 @@ use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class MaterialController
+ * @package App\Controller
+ * @IsGranted("ROLE_USER")
+ */
 class MaterialController extends ApiController
 {
 	/**
 	 * @Route("/materials/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 */
-	public function list($page=0, MaterialRepository $materialRepository)
+	public function list(MaterialRepository $materialRepository, $page=0)
 	{
 		$material = $materialRepository->findBy([], ['name'=>'ASC'], getenv('LIMIT'), $page);
 		$materialArray = [];
@@ -79,14 +85,14 @@ class MaterialController extends ApiController
 		// persist the new material
 		try{
 			$material = new Material();
-			$material->setName($request->get('name'));
-			$material->setDescription($request->get('description'));
-			$material->setType($request->get('type'));
-			$material->setImage($request->get('image'));
-			$material->setLocation($request->get('location'));
-			$material->setQuantity($request->get('quantity'));
-			$material->setSize($request->get('size'));
-			$material->setTheme($request->get('theme'));
+			$material->setName($request->get('name'))
+				->setDescription($request->get('description'))
+				->setType($request->get('type'))
+				->setImage($request->get('image'))
+				->setLocation($request->get('location'))
+				->setQuantity($request->get('quantity'))
+				->setSize($request->get('size'))
+				->setTheme($request->get('theme'));
 
 			if($user_id = $request->get('user_id')){
 
@@ -99,12 +105,11 @@ class MaterialController extends ApiController
 			if($request->get('address') && $request->get('postal_code') && $request->get('city')){
 
 				$place = new Place();
-				$place->setTitle($request->get('place_title', 'Local'));
-				$place->setAddress($request->get('address'));
-				$place->setPostalCode($request->get('postal_code'));
-				$place->setCity($request->get('city'));
-				$place->setCountry($request->get('country'));
-				$place->geocode();
+				$place->setAddress($request->get('address'))
+					->setPostalCode($request->get('postal_code'))
+					->setCity($request->get('city'))
+					->setCountry($request->get('country'))
+					->geocode();
 
 				if(!$place->hasError() && $existingPlace = $placeRepository->findOneBy(['gid'=>$place->getGid()])){
 

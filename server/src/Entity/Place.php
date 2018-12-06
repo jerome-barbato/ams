@@ -20,10 +20,6 @@ class Place
 	 */
 	private $id;
 
-	/**
-	 * @ORM\Column(type="string", length=200, nullable=true)
-	 */
-	private $title;
 
 	/**
 	 * @ORM\Column(type="string", length=200)
@@ -116,18 +112,6 @@ class Place
 	public function getId(): ?int
 	{
 		return $this->id;
-	}
-
-	public function getTitle(): ?string
-	{
-		return $this->title;
-	}
-
-	public function setTitle(?string $title): self
-	{
-		$this->title = $title;
-
-		return $this;
 	}
 
 	public function getAddress(): ?string

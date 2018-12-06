@@ -7,9 +7,9 @@ use App\Repository\UserRepository;
 use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserController extends ApiController
 {
@@ -17,7 +17,7 @@ class UserController extends ApiController
 	 * @Route("/users/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 * @IsGranted("ROLE_USER")
 	 */
-	public function list($page=0, UserRepository $userRepository)
+	public function list( UserRepository $userRepository)
 	{
 		$users      = $userRepository->findBy([], ['inscription'=>'ASC'], getenv('LIMIT'), $page);
 		$usersArray = [];
@@ -72,25 +72,25 @@ class UserController extends ApiController
 			// persist the new user
 			$user = new User();
 
-			$user->setFirstName($request->get('first_name'));
-			$user->setLastName($request->get('last_name'));
-			$user->setEmail($request->get('email'));
+			$user->setFirstName($request->get('first_name'))
+				->setLastName($request->get('last_name'))
+				->setEmail($request->get('email'));
 
 			$password = $request->get('password', base64_encode(random_bytes(8)));
 			$encoder = $this->get('security.password_encoder');
 			$encoded = $encoder->encodePassword($user, $password);
+
 			$user->setPassword($encoded);
 
 			if($request->get('is_admin'))
 				$user->setRoles(['ROLE_ADMIN']);
 
 			$place = new Place();
-			$place->setTitle($request->get('place_title', 'Maison'));
-			$place->setAddress($request->get('address'));
-			$place->setPostalCode($request->get('postal_code'));
-			$place->setCity($request->get('city'));
-			$place->setCountry($request->get('country'));
-			$place->geocode();
+			$place->setAddress($request->get('address'))
+				->setPostalCode($request->get('postal_code'))
+				->setCity($request->get('city'))
+				->setCountry($request->get('country'))
+				->geocode();
 
 			if(!$place->hasError() && $existingPlace = $placeRepository->findOneBy(['gid'=>$place->getGid()])){
 

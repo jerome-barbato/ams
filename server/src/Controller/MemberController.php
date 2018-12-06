@@ -10,7 +10,13 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * Class MemberController
+ * @package App\Controlle
+ * @IsGranted("ROLE_USER")
+ */
 class MemberController extends ApiController
 {
 	/**
@@ -93,9 +99,9 @@ class MemberController extends ApiController
 			return $this->respondValidationError('The group does not exist');
 
 		$member = new Member();
-		$member->setUser($user);
-		$member->setGroup($group);
-		$member->setRole($role);
+		$member->setUser($user)
+			->setGroup($group)
+			->setRole($role);
 
 		try{
 

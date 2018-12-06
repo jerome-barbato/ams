@@ -48,13 +48,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 		$authToken = $credentials['token'];
 
 		if (null === $authToken)
-			return;
+			return false;
 
 		/* @var $authToken AuthToken */
 		$authToken = $this->em->getRepository(AuthToken::class)->findOneBy(['value' => $authToken]);
 
 		if( !$authToken )
-			return;
+			return false;
 
 		//@todo: check token expiration, ip
 

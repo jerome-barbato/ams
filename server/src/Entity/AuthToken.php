@@ -56,9 +56,10 @@ class AuthToken
 		return $this->id;
 	}
 
-	public function setId($id)
+	public function setId($id): self
 	{
 		$this->id = $id;
+		return $this;
 	}
 
 	public function getValue()
@@ -66,9 +67,10 @@ class AuthToken
 		return $this->value;
 	}
 
-	public function setValue($value)
+	public function setValue($value): self
 	{
 		$this->value = $value;
+		return $this;
 	}
 
 	public function getCreatedAt()
@@ -76,9 +78,10 @@ class AuthToken
 		return $this->createdAt;
 	}
 
-	public function setCreatedAt(\DateTime $createdAt)
+	public function setCreatedAt(\DateTime $createdAt): self
 	{
 		$this->createdAt = $createdAt;
+		return $this;
 	}
 
 	public function getUser()
@@ -86,9 +89,10 @@ class AuthToken
 		return $this->user;
 	}
 
-	public function setUser(User $user)
+	public function setUser(User $user): self
 	{
 		$this->user = $user;
+		return $this;
 	}
 
 	public function getIpHash()
@@ -96,9 +100,10 @@ class AuthToken
 		return $this->ip_hash;
 	}
 
-	public function setIpHash($ip_hash): void
+	public function setIpHash($ip_hash): self
 	{
 		$this->ip_hash = $ip_hash;
+		return $this;
 	}
 
 	public static function anonymizeIp( $ip )
