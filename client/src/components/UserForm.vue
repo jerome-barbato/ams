@@ -4,13 +4,13 @@
 
 		<div class="field">
 			<div class="control">
-				<input class="input" type="text" placeholder="enter militant first name..." v-model="firstName" @keydown="errors = ''">
-				<input class="input" type="text" placeholder="enter militant last name..." v-model="lastName" @keydown="errors = ''">
-				<input class="input" type="text" placeholder="enter militant email..." v-model="email" @keydown="errors = ''">
+				<input class="input" type="text" placeholder="enter user first name..." v-model="firstName" @keydown="errors = ''">
+				<input class="input" type="text" placeholder="enter user last name..." v-model="lastName" @keydown="errors = ''">
+				<input class="input" type="text" placeholder="enter user email..." v-model="email" @keydown="errors = ''">
 			</div>
 		</div>
 
-		<button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }">Add Militant</button>
+		<button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }">Add User</button>
 	</form>
 </template>
 
@@ -30,10 +30,10 @@
 		methods: {
 			onSubmit() {
 				this.isLoading = true;
-				this.postMilitant();
+				this.postUser();
 			},
-			async postMilitant() {
-				axios.post('/militants', this.$data)
+			async postUser() {
+				axios.post('/users', this.$data)
 					.then(response => {
 						this.firstName = '';
 						this.isLoading = false;

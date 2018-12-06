@@ -10,11 +10,11 @@ Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 
 
-import MilitantsDashboard from './components/MilitantsDashboard.vue';
+import UsersDashboard from './components/UsersDashboard.vue';
 import GroupsDashboard from './components/GroupsDashboard.vue';
 
 const routes = [
-	{ path: '/militants', component: MilitantsDashboard },
+	{ path: '/users', component: UsersDashboard },
 	{ path: '/groups', component: GroupsDashboard },
 ];
 
@@ -25,5 +25,5 @@ const router = new VueRouter({
 
 new Vue({
 	router,
-	render: h => h(MilitantsDashboard)
+	render: h => h(UsersDashboard)
 }).$mount('#app');

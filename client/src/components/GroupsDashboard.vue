@@ -29,7 +29,6 @@
 
 <script>
 	import axios from 'axios'
-	import Vue from 'vue'
 	import GroupForm from './GroupForm.vue'
 
 	export default {
@@ -54,9 +53,6 @@
 		methods: {
 			addGroup(group) {
 				this.groups.push(group)
-			},
-			removeGroup(group) {
-
 			}
 		}
 	}

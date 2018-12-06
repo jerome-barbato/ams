@@ -10,12 +10,12 @@
 			</tr>
 			</thead>
 			<tbody>
-			<template v-for="militant in militants">
-				<tr v-bind:key="militant.id">
-					<td>{{ militant.id }}</td>
-					<td>{{ militant.name }}</td>
+			<template v-for="user in users">
+				<tr v-bind:key="user.id">
+					<td>{{ user.id }}</td>
+					<td>{{ user.name }}</td>
 					<td>
-						<form @submit.prevent="removeMilitant(militant)">
+						<form @submit.prevent="removeUser(user)">
 							<button class="button is-primary" v-bind:class="{ 'is-loading' : isLoading }">Remove</button>
 						</form>
 					</td>
@@ -23,39 +23,38 @@
 			</template>
 			</tbody>
 		</table>
-		<militant-form @completed="addMilitant"></militant-form>
+		<user-form @completed="addUser"></user-form>
 	</div>
 </template>
 
 <script>
 	import axios from 'axios'
-	import Vue from 'vue'
-	import MilitantForm from './MilitantForm.vue'
+	import UserForm from './UserForm.vue'
 
 	export default {
 		components: {
-			MilitantForm
+			UserForm
 		},
 		data() {
 			return {
-				militants: {},
+				users: {},
 				isLoading: true
 			}
 		},
 		async created () {
 			try {
-				const response = await axios.get('/militants');
-				this.militants = response.data;
+				const response = await axios.get('/users');
+				this.users = response.data;
 				this.isLoading = false;
 			} catch(e) {
 				// handle authentication error here
 			}
 		},
 		methods: {
-			addMilitant(militant) {
-				this.militants.push(militant)
+			addUser(user) {
+				this.users.push(user)
 			},
-			removeMilitant(militant) {
+			removeUser(user) {
 
 			}
 		}

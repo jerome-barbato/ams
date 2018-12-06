@@ -17,7 +17,7 @@ class UserController extends ApiController
 	 * @Route("/users/{page}", methods={"GET"}, requirements={"page"="\d+"})
 	 * @IsGranted("ROLE_USER")
 	 */
-	public function list( UserRepository $userRepository)
+	public function list( UserRepository $userRepository, $page=0)
 	{
 		$users      = $userRepository->findBy([], ['inscription'=>'ASC'], getenv('LIMIT'), $page);
 		$usersArray = [];
